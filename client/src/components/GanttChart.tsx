@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -7,7 +6,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "./ui/dropdown-menu";
-
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
 interface Task {
   id: string;
   name: string;
@@ -18,54 +18,70 @@ interface Task {
 }
 
 const GanttChart: React.FC = () => {
-  // Define the tasks with their start and end dates, and progress
+  const [isGMT, setIsGMT] = useState(true); // State to toggle between GMT and IST
+
+  const toggleTimeZone = () => setIsGMT(!isGMT);
 
   const tasks: Task[] = [
     {
       id: "1",
       assigned_to: "mahesh desilva",
       name: "Analysis",
-      start: "2024-12-01",
-      end: "2024-12-05",
+      start: "2024-12-01T00:00:00Z",
+      end: "2024-12-05T23:59:59Z",
       progress: 100,
     },
     {
       id: "2",
-      name: "Write",
+      name: "Writing",
       assigned_to: "Prashant kishore",
-      start: "2024-12-06",
-      end: "2024-12-09",
+      start: "2024-12-06T00:00:00Z",
+      end: "2024-12-09T23:59:59Z",
       progress: 25,
     },
     {
       id: "3",
-      name: "Cite",
+      name: "Citing",
       assigned_to: "Neeraj Kartikeyan",
-      start: "2024-12-10",
-      end: "2024-12-11",
+      start: "2024-12-10T00:00:00Z",
+      end: "2024-12-11T23:59:59Z",
       progress: 20,
     },
     {
       id: "4",
-      name: "Complete",
+      name: "Design",
       assigned_to: "H shivakumar",
-      start: "2024-12-12",
-      end: "2024-12-13",
+      start: "2024-12-12T00:00:00Z",
+      end: "2024-12-13T23:59:59Z",
       progress: 0,
     },
     {
       id: "5",
       name: "Outline",
-      start: "2024-12-01",
+      start: "2024-12-01T00:00:00Z",
       assigned_to: "Prateek Mallikarjun",
-      end: "2024-12-02",
+      end: "2024-12-02T23:59:59Z",
       progress: 100,
     },
   ];
+
+  const formatDateTime = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: isGMT ? "GMT" : "Asia/Kolkata",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
+  };
+
   const DDMenu: React.FC<{ task: Task }> = ({ task }) => (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center">
-      <ChevronDown  color="white"/>
+        <ChevronDown color="white" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem className="text-sm">
@@ -75,10 +91,11 @@ const GanttChart: React.FC = () => {
           <strong>Assigned To:</strong> {task.assigned_to}
         </DropdownMenuItem>
         <DropdownMenuItem className="text-sm">
-          <strong>Start:</strong> {new Date(task.start).toLocaleDateString()}
+          <strong>Start:</strong> {formatDateTime(task.start)}
+          <span>{isGMT ? "(GMT Timezone)" : "( Indian Timezone ) "}</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="text-sm">
-          <strong>End:</strong> {new Date(task.end).toLocaleDateString()}
+          <strong>End:</strong> {formatDateTime(task.end)}
         </DropdownMenuItem>
         <DropdownMenuItem className="text-sm">
           <strong>Progress:</strong> {task.progress}%
@@ -90,12 +107,10 @@ const GanttChart: React.FC = () => {
   const chartStartDate = new Date("2024-12-01");
   const chartEndDate = new Date("2024-12-15");
 
-  // Calculate the total duration in days for the chart
   const totalDays = Math.ceil(
     (chartEndDate.getTime() - chartStartDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  // Utility to calculate task position and duration
   const calculatePosition = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -110,9 +125,16 @@ const GanttChart: React.FC = () => {
   };
 
   return (
-    <div className="overflow-x-auto p-4">
-      <table className="min-w-full table-auto border-collapse border border-gray-300">
-        {/* Header row */}
+    <div className="overflow-x-auto p-4 relative">
+      <div className="flex items-center gap-2">
+        <Switch checked={isGMT} onCheckedChange={toggleTimeZone} />{" "}
+        <Label> GMT Timezone</Label>
+      </div>
+      <h1 className="text-lg font-semibold fixed top-0 right-0 mt-1  bg-white p-2 z-10">
+        Gantt Chart
+      </h1>
+
+      <table className="min-w-full overflow-x-auto mt-20 table-auto border border-gray-300">
         <thead>
           <tr className="bg-gray-200">
             <th className="p-2 text-left font-semibold">Task</th>
@@ -131,8 +153,6 @@ const GanttChart: React.FC = () => {
             ))}
           </tr>
         </thead>
-
-        {/* Task rows */}
         <tbody>
           {tasks.map((task) => {
             const { startOffset, duration } = calculatePosition(
@@ -141,16 +161,15 @@ const GanttChart: React.FC = () => {
             );
             return (
               <tr key={task.id} className="even:bg-gray-50">
-                <td className="p-2 font-medium">{task.name}</td>
+                <td className="p-2 font-medium w-90">{task.name}</td>
                 {[...Array(totalDays).keys()].map((day) => {
                   const isPartOfTask =
                     day >= startOffset && day < startOffset + duration;
-                  console.log({ day, startOffset, isPartOfTask });
 
                   return (
                     <td
                       key={day}
-                      className={` h-8 text-center border-t border-gray-100`}
+                      className={`h-8 text-center border-t border-gray-100`}
                     >
                       {isPartOfTask && day === startOffset && duration === 1 ? (
                         <div className="bg-blue-500 rounded-lg h-2/3">
