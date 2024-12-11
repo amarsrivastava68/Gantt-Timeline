@@ -8,14 +8,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
-interface Task {
-  id: string;
-  name: string;
-  assigned_to: string;
-  start: string; 
-  end: string; 
-  progress: number;
-}
+import type { Task } from "@/App";
 interface GanttChartProps {
   tasks: Task[];
 }
@@ -83,7 +76,7 @@ const GanttChart: React.FC<GanttChartProps> = ({tasks }) => {
 
   const DDMenu: React.FC<{ task: Task }> = ({ task }) => (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center">
+      <DropdownMenuTrigger  className="flex items-center border-none">
         <ChevronDown color="white" />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
