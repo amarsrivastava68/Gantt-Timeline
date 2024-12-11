@@ -12,58 +12,61 @@ interface Task {
   id: string;
   name: string;
   assigned_to: string;
-  start: string; // Can be of type string or Date
-  end: string; // Can be of type string or Date
+  start: string; 
+  end: string; 
   progress: number;
 }
+interface GanttChartProps {
+  tasks: Task[];
+}
 
-const GanttChart: React.FC = () => {
+const GanttChart: React.FC<GanttChartProps> = ({tasks }) => {
   const [isGMT, setIsGMT] = useState(true); // State to toggle between GMT and IST
 
   const toggleTimeZone = () => setIsGMT(!isGMT);
 
-  const tasks: Task[] = [
-    {
-      id: "1",
-      assigned_to: "mahesh desilva",
-      name: "Analysis",
-      start: "2024-12-01T00:00:00Z",
-      end: "2024-12-05T23:59:59Z",
-      progress: 100,
-    },
-    {
-      id: "2",
-      name: "Writing",
-      assigned_to: "Prashant kishore",
-      start: "2024-12-06T00:00:00Z",
-      end: "2024-12-09T23:59:59Z",
-      progress: 25,
-    },
-    {
-      id: "3",
-      name: "Citing",
-      assigned_to: "Neeraj Kartikeyan",
-      start: "2024-12-10T00:00:00Z",
-      end: "2024-12-11T23:59:59Z",
-      progress: 20,
-    },
-    {
-      id: "4",
-      name: "Design",
-      assigned_to: "H shivakumar",
-      start: "2024-12-12T00:00:00Z",
-      end: "2024-12-13T23:59:59Z",
-      progress: 0,
-    },
-    {
-      id: "5",
-      name: "Outline",
-      start: "2024-12-01T00:00:00Z",
-      assigned_to: "Prateek Mallikarjun",
-      end: "2024-12-02T23:59:59Z",
-      progress: 100,
-    },
-  ];
+  // const tasks: Task[] = [
+  //   {
+  //     id: "1",
+  //     assigned_to: "mahesh desilva",
+  //     name: "Analysis",
+  //     start: "2024-12-01T00:00:00Z",
+  //     end: "2024-12-05T23:59:59Z",
+  //     progress: 100,
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Writing",
+  //     assigned_to: "Prashant kishore",
+  //     start: "2024-12-06T00:00:00Z",
+  //     end: "2024-12-09T23:59:59Z",
+  //     progress: 25,
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Citing",
+  //     assigned_to: "Neeraj Kartikeyan",
+  //     start: "2024-12-10T00:00:00Z",
+  //     end: "2024-12-11T23:59:59Z",
+  //     progress: 20,
+  //   },
+  //   {
+  //     id: "4",
+  //     name: "Design",
+  //     assigned_to: "H shivakumar",
+  //     start: "2024-12-12T00:00:00Z",
+  //     end: "2024-12-13T23:59:59Z",
+  //     progress: 0,
+  //   },
+  //   {
+  //     id: "5",
+  //     name: "Outline",
+  //     start: "2024-12-01T00:00:00Z",
+  //     assigned_to: "Prateek Mallikarjun",
+  //     end: "2024-12-02T23:59:59Z",
+  //     progress: 100,
+  //   },
+  // ];
 
   const formatDateTime = (date: string) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -126,9 +129,9 @@ const GanttChart: React.FC = () => {
 
   return (
     <div className="overflow-x-auto p-4 relative">
-      <div className="flex items-center gap-2">
+      <div className="flex fixed mt-2 p-2 z-10 top-0 left -0 items-center gap-2">
         <Switch checked={isGMT} onCheckedChange={toggleTimeZone} />{" "}
-        <Label> GMT Timezone</Label>
+        <Label > GMT Timezone</Label>
       </div>
       <h1 className="text-lg font-semibold fixed top-0 right-0 mt-1  bg-white p-2 z-10">
         Gantt Chart
@@ -172,17 +175,17 @@ const GanttChart: React.FC = () => {
                       className={`h-8 text-center border-t border-gray-100`}
                     >
                       {isPartOfTask && day === startOffset && duration === 1 ? (
-                        <div className="bg-blue-500 rounded-lg h-2/3">
+                        <div className="bg-blue-500 rounded-lg h-3/5">
                           <DDMenu task={task} />
                         </div>
                       ) : isPartOfTask && day === startOffset ? (
-                        <div className="bg-blue-500 rounded-l-lg h-2/3">
+                        <div className="bg-blue-500 rounded-l-lg h-3/5">
                           <DDMenu task={task} />
                         </div>
                       ) : isPartOfTask && day === startOffset + duration - 1 ? (
-                        <div className="bg-blue-500 rounded-r-lg h-2/3"></div>
+                        <div className="bg-blue-500 rounded-r-lg h-3/5"></div>
                       ) : isPartOfTask ? (
-                        <div className="bg-blue-500 h-2/3"></div>
+                        <div className="bg-blue-500 h-3/5"></div>
                       ) : (
                         <div className="bg-gray-100 h-full"></div>
                       )}
